@@ -7,3 +7,4 @@ dist/
 *.tsbuildinfo
 *.log
 work/
+site/public/build.json

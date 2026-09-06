@@ -34,3 +34,15 @@ The shared status service answered its health probe, but this process has no con
 ## Privacy
 
 The persona and projects are visibly fictional. No real credentials, clients, contact details or professional claims were invented. Private vocabulary payloads, cache contents and filenames are excluded from ordinary history and exports. Tests use neutral synthetic strings only.
+
+## Later implementation milestone
+
+The initial source checkpoint `c6d86bda7e1773d3099a52ff0253e0976189a67e` is preserved on the remote feature branch. It is not merged into `main`.
+
+The next slice adds initial conversion and authenticator surfaces, a hand-written required-feature list, a deliberately incomplete evidence check, a user-scoped root build entrypoint, successful-build-only provenance, and updated dependencies. The latest focused result is 27 tests passing: 11 model, 10 conversion, and 6 authenticator tests, with 18 RFC algorithm vectors inside the authenticator cases. TypeScript passed after formatting these source files. A production build of this exact slice remains pending.
+
+The initial dependency audit had 11 advisories. Updating compatible React, Vinext, Vite, RSC and hosting-tool versions plus matching peer requirements reduced the reported count to zero. This is advisory-database evidence, not a security certification.
+
+An independent converter review found incomplete peak-memory isolation and incomplete operation-specific output validation. These remain open and are disclosed in the converter. The total output limit now applies to every adapter, source reads are abortable and included in the timeout, and the UI labels results generated rather than claiming comprehensive validation. Provenance is accepted only when the source is committed and clean and the build has succeeded; failed builds publish an unavailable record.
+
+The current evidence checker intentionally remains red. No canonical row is asserted verified without complete source-bound built evidence. The authenticator's browser vault, management and recovery flows are still incomplete. Read the new conversion and authenticator articles before continuing those features.
