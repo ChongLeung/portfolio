@@ -7,3 +7,11 @@ The implementation uses the browser Web Crypto HMAC implementation and the RFC 6
 Entries are AES-GCM encrypted in IndexedDB using a non-exportable browser key. Each entry binds authenticated data to its stable identifier. This is a per-origin browser-storage equivalent, not an operating-system credential vault. Code executing in the same origin can use the key. Clearing browser data removes the key and entries. No export or history route serializes pairing secrets.
 
 **Unfinished:** manual entry, QR import/camera scanning, entry management, encrypted append-only history, complete recovery, bulk operations, full localization and browser-storage acceptance tests. Offline operation cannot measure clock skew, so the interface states that it relies on the device clock. The current source is not complete canonical authenticator coverage.
+
+## Corruption and lifecycle handling
+
+A missing encryption key is never replaced while encrypted entries remain. An invalid key is retained and reported. Healthy entries remain readable when another sealed record is damaged. Reads scan at most 50 sealed records per page and reject oversized records before decryption; a skipped-record count distinguishes corruption from an empty account list. Connections close on schema-version changes and storage opening has a bounded deadline.
+
+Pairing now verifies the current time window. A successful save is distinguished from a subsequent list-refresh failure, so a refresh error does not invite duplicate enrollment. Pairing QR drawing uses a generation check and cleared staging/display canvases when hidden, changed or unmounted. Unsaved pairing input participates in the workspace's draft-discard confirmation.
+
+`site/tests/vault.test.mjs` adds eight storage cases for concurrent first writes, missing/invalid keys, damaged neighbors, paging, duplicate identities, oversized records and cancellation. These use an isolated IndexedDB fixture plus real Web Crypto operations; they do not substitute for final browser-vault acceptance evidence.

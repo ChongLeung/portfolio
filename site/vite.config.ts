@@ -1,8 +1,9 @@
 import { sites } from '@openai/sites-vite-plugin';
 import tailwindcss from '@tailwindcss/postcss';
 import vinext from 'vinext';
-import { defineConfig } from 'vite';
+import { defineConfig, type ViteDevServer } from 'vite';
 import hostingConfig from './.openai/hosting.json' with { type: 'json' };
+import packageMetadata from './package.json' with { type: 'json' };
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   '00000000-0000-4000-8000-000000000000';
@@ -50,6 +51,29 @@ export default defineConfig(async () => {
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
     plugins: [
+      {
+        name: 'development-provenance',
+        apply: 'serve',
+        configureServer(server: ViteDevServer) {
+          server.middlewares.use((request, response, next) => {
+            if (request.url?.split('?')[0] !== '/build.json') {
+              next();
+              return;
+            }
+            response.setHeader('Content-Type', 'application/json');
+            response.setHeader('Cache-Control', 'no-store');
+            response.end(
+              JSON.stringify({
+                version: packageMetadata.version,
+                commit: null,
+                builtAt: null,
+                sourceDirty: true,
+                status: 'development',
+              }),
+            );
+          });
+        },
+      },
       vinext(),
       sites(),
       cloudflare({

@@ -11,9 +11,9 @@
 
 ## Universal surface capabilities
 - [ ] Complete search workbenches and independently scoped search on every surface.
-- [ ] Complete browser-style tabs, pinning, groups and bulk operations.
+- [ ] Complete browser-style tabs, pinning, groups and bulk operations. Initial transactional controls and focused flows are implemented; final coverage remains pending.
 - [ ] Complete per-element context menus, appearance editing and toy locks.
-- [ ] Complete School mode, local authenticator and unlock recovery.
+- [ ] Complete School mode, local authenticator and unlock recovery. Initial authenticator corruption recovery and bounded paging are implemented; broader recovery remains pending.
 - [ ] Complete scheduled settings and validated external sources.
 - [ ] Complete local converter, validated adapters and durable queue.
 - [ ] Complete local Ollama catalog, pulls, chat and launch profiles.

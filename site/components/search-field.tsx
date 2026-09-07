@@ -10,12 +10,14 @@ export function SearchField({
   records,
   onResults,
   t,
+  onStatus,
 }: {
   id: string;
   label: string;
   records: SearchRecord[];
   onResults: (ids: string[]) => void;
   t: (en: string, yue?: string) => string;
+  onStatus?: (status: 'valid' | 'pending' | 'invalid') => void;
 }) {
   const [query, setQuery] = useState('');
   const [regex, setRegex] = useState(false);
@@ -27,9 +29,12 @@ export function SearchField({
   const [matches, setMatches] = useState<unknown[]>([]);
   const callback = useRef(onResults);
   callback.current = onResults;
+  const statusCallback = useRef(onStatus);
+  statusCallback.current = onStatus;
   const serialized = JSON.stringify(records);
   useEffect(() => {
     if (!query) {
+      statusCallback.current?.('valid');
       callback.current(
         JSON.parse(serialized).map((item: SearchRecord) => item.id),
       );
@@ -39,11 +44,26 @@ export function SearchField({
       setMatches([]);
       return;
     }
-    const worker = new Worker('/search-worker.js');
+    let worker: Worker;
+    try {
+      worker = new Worker('/search-worker.js');
+    } catch {
+      statusCallback.current?.('invalid');
+      callback.current([]);
+      setError(
+        t(
+          'This browser could not start the search worker. Clear the query to show all records.',
+          '這個瀏覽器未能啟動搜尋工具，清除搜尋可顯示全部紀錄。',
+        ),
+      );
+      return;
+    }
+    statusCallback.current?.('pending');
     let done = false;
     const timeout = setTimeout(() => {
       done = true;
       worker.terminate();
+      statusCallback.current?.('invalid');
       setError(
         t(
           'Search stopped after 250 ms. Simplify the expression.',
@@ -58,9 +78,11 @@ export function SearchField({
       clearTimeout(timeout);
       worker.terminate();
       if (!data.ok) {
+        statusCallback.current?.('invalid');
         setError(data.error);
         callback.current([]);
       } else {
+        statusCallback.current?.('valid');
         setError('');
         setElapsed(data.elapsedMs);
         setMatches(data.matches);
@@ -69,6 +91,7 @@ export function SearchField({
       }
     };
     worker.onerror = () => {
+      statusCallback.current?.('invalid');
       done = true;
       clearTimeout(timeout);
       worker.terminate();

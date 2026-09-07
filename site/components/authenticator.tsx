@@ -10,13 +10,16 @@ import {
   readTotp,
   saveTotp,
   totp,
+  VaultError,
   type TotpConfig,
 } from '../lib/authenticator';
 
 export default function Authenticator({
   t,
+  onDraftChange,
 }: {
   t: (en: string, yue?: string) => string;
+  onDraftChange?: (dirty: boolean) => void;
 }) {
   const [entries, setEntries] = useState<{ id: string; config: TotpConfig }[]>(
     [],
@@ -35,23 +38,77 @@ export default function Authenticator({
   const canvas = useRef<HTMLCanvasElement>(null);
   const alive = useRef(true);
   const saving = useRef(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [corruptCount, setCorruptCount] = useState(0);
+  const [loadError, setLoadError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const loadGeneration = useRef(0);
+  const qrGeneration = useRef(0);
+  const candidateId = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    onDraftChange?.(!!uri || busy);
+    return () => onDraftChange?.(false);
+  }, [uri, busy, onDraftChange]);
+  const describeVaultError = (error: unknown) => {
+    const code = error instanceof VaultError ? error.code : 'UNAVAILABLE';
+    if (code === 'KEY_MISSING')
+      return t(
+        'The encryption key is missing while encrypted entries remain. No replacement key was created. Restore this browser profile from a backup before saving new entries.',
+        '加密項目仍然存在，但金鑰遺失。沒有建立替代金鑰，請先從備份還原這個瀏覽器設定檔，再儲存新項目。',
+      );
+    if (code === 'KEY_INVALID')
+      return t(
+        'The stored encryption key is invalid. Existing entries were retained. Restore the browser profile from a known backup.',
+        '已儲存的加密金鑰無效，原有項目已保留。請從已知備份還原瀏覽器設定檔。',
+      );
+    if (code === 'UPGRADE_BLOCKED')
+      return t(
+        'Another page is blocking a storage upgrade. Close other pages for this portfolio and retry.',
+        '另一個頁面阻止儲存空間升級，請關閉這個作品集的其他頁面後再試。',
+      );
+    return t(
+      'Local storage is unavailable or refused the operation. Check browser storage permissions and free space, then retry. Existing entries were retained.',
+      '本機儲存空間未能使用或拒絕操作。請檢查瀏覽器權限及可用空間後再試，原有項目已保留。',
+    );
+  };
+  const loadPage = async (after?: string, signal?: AbortSignal) => {
+    const generation = ++loadGeneration.current;
+    setLoading(true);
+    try {
+      const page = await readTotp({ after, signal });
+      if (
+        !alive.current ||
+        signal?.aborted ||
+        generation !== loadGeneration.current
+      )
+        return false;
+      setEntries(page.entries);
+      setNextCursor(page.nextCursor);
+      setCorruptCount(page.corruptCount);
+      setCodes({});
+      setLoadError('');
+      return true;
+    } catch (error) {
+      if (
+        alive.current &&
+        !signal?.aborted &&
+        generation === loadGeneration.current
+      )
+        setLoadError(describeVaultError(error));
+      return false;
+    } finally {
+      if (alive.current && generation === loadGeneration.current)
+        setLoading(false);
+    }
+  };
   useEffect(() => {
     alive.current = true;
-    readTotp()
-      .then((items) => {
-        if (alive.current) setEntries(items);
-      })
-      .catch(() => {
-        if (alive.current)
-          setMessage(
-            t(
-              'The local authenticator store could not be opened. Existing data has not been changed.',
-              '未能開啟本機驗證器儲存空間，原有資料保持不變。',
-            ),
-          );
-      });
+    const controller = new AbortController();
+    loadPage(undefined, controller.signal);
     return () => {
       alive.current = false;
+      controller.abort();
+      loadGeneration.current++;
     };
   }, []);
   useEffect(() => {
@@ -95,18 +152,41 @@ export default function Authenticator({
     };
   }, [entries, visible]);
   useEffect(() => {
-    if (qr && candidate && canvas.current)
-      QRCode.toCanvas(canvas.current, pairingUri(candidate), {
-        width: 256,
-        margin: 4,
-        errorCorrectionLevel: 'M',
-      }).catch(() =>
-        setMessage(t('The QR code could not be drawn.', '未能繪製 QR 碼。')),
-      );
+    const generation = ++qrGeneration.current;
+    const display = canvas.current;
+    if (!qr || !candidate || !display) return;
+    const staging = document.createElement('canvas');
+    QRCode.toCanvas(staging, pairingUri(candidate), {
+      width: 256,
+      margin: 4,
+      errorCorrectionLevel: 'M',
+    })
+      .then(() => {
+        if (generation !== qrGeneration.current || !alive.current) return;
+        display.width = staging.width;
+        display.height = staging.height;
+        display.getContext('2d')?.drawImage(staging, 0, 0);
+      })
+      .catch(() => {
+        if (generation === qrGeneration.current && alive.current)
+          setMessage(t('The QR code could not be drawn.', '未能繪製 QR 碼。'));
+      })
+      .finally(() => {
+        staging.width = 0;
+        staging.height = 0;
+      });
+    return () => {
+      qrGeneration.current++;
+      display.width = 0;
+      display.height = 0;
+      staging.width = 0;
+      staging.height = 0;
+    };
   }, [qr, candidate]);
   const review = () => {
     try {
       setCandidate(parseTotpUri(uri));
+      candidateId.current = crypto.randomUUID();
       setMessage('');
       setCode('');
       setQr(false);
@@ -126,12 +206,8 @@ export default function Authenticator({
     try {
       if (!new RegExp(`^\\d{${candidate.digits}}$`).test(code)) throw Error();
       const now = Date.now();
-      const valid = await Promise.all(
-        [-1, 0, 1].map((step) =>
-          totp(candidate, Math.max(0, now + step * candidate.period * 1000)),
-        ),
-      );
-      if (!valid.includes(code)) {
+      const valid = await totp(candidate, now);
+      if (valid !== code) {
         setMessage(
           t(
             'That code did not match. Check your clock and try the current code.',
@@ -140,10 +216,8 @@ export default function Authenticator({
         );
         return;
       }
-      await saveTotp(candidate);
-      const stored = await readTotp();
+      await saveTotp(candidate, candidateId.current);
       if (!alive.current) return;
-      setEntries(stored);
       setCandidate(null);
       setUri('');
       setCode('');
@@ -154,14 +228,16 @@ export default function Authenticator({
           '驗證碼確認後，項目已儲存在本機。',
         ),
       );
-    } catch {
-      if (alive.current)
+      const refreshed = await loadPage();
+      if (!refreshed && alive.current)
         setMessage(
           t(
-            'The entry could not be saved. No success is assumed.',
-            '未能儲存項目，請勿當作已完成。',
+            'The entry was saved, but the account list could not be refreshed. Use Retry loading; do not pair the same entry again.',
+            '項目已儲存，但未能更新帳戶清單。請使用重新載入，毋須再次配對同一項目。',
           ),
         );
+    } catch (error) {
+      if (alive.current) setMessage(describeVaultError(error));
     } finally {
       saving.current = false;
       if (alive.current) setBusy(false);
@@ -172,6 +248,44 @@ export default function Authenticator({
       <section className="settings-card">
         <Shield size={28} aria-hidden="true" />
         <h2>{t('Local authenticator', '本機驗證器')}</h2>
+        {loadError && (
+          <div role="alert">
+            <p>{loadError}</p>
+            <Button
+              variant="outlined"
+              disabled={loading || busy}
+              onClick={() => loadPage()}
+            >
+              {t('Retry loading', '重新載入')}
+            </Button>
+          </div>
+        )}
+        {corruptCount > 0 && (
+          <p role="status">
+            {t(
+              `${corruptCount} damaged entries were skipped on this page. Healthy entries remain available. Restore the browser profile from a backup to recover damaged data.`,
+              `這一頁略過了 ${corruptCount} 個損毀項目，正常項目仍可使用。如需復原損毀資料，請從備份還原瀏覽器設定檔。`,
+            )}
+          </p>
+        )}
+        <div className="dialog-actions">
+          <Button
+            variant="text"
+            disabled={loading || busy}
+            onClick={() => loadPage()}
+          >
+            {t('First page / refresh', '第一頁／更新')}
+          </Button>
+          {nextCursor && (
+            <Button
+              variant="outlined"
+              disabled={loading || busy}
+              onClick={() => loadPage(nextCursor)}
+            >
+              {t('Next 50 entries', '之後 50 個項目')}
+            </Button>
+          )}
+        </div>
         <p>
           {t(
             'Entries are encrypted in this browser with a non-exportable local key. This is browser storage, not an operating-system vault; code running in this origin can use the key. Clearing browser data removes entries and the key.',

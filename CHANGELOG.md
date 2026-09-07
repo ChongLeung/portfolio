@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Added persistent workspace tabs, groups, docking, scoped searches, close/reopen and draft protection.
+- Repaired authenticator key-loss recovery, damaged-entry isolation, bounded paging and save/refresh reporting.
+- Prevented development previews from displaying stale production build metadata.
 - Added the explicitly fictional portfolio and three expandable concept projects.
 - Added initial local preferences, strict JSON validation, recent-history recovery and confirmation.
 - Added bounded-worker search, initial local conversion adapters and TOTP foundations.

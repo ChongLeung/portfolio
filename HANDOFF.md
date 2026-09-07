@@ -46,3 +46,13 @@ The initial dependency audit had 11 advisories. Updating compatible React, Vinex
 An independent converter review found incomplete peak-memory isolation and incomplete operation-specific output validation. These remain open and are disclosed in the converter. The total output limit now applies to every adapter, source reads are abortable and included in the timeout, and the UI labels results generated rather than claiming comprehensive validation. Provenance is accepted only when the source is committed and clean and the build has succeeded; failed builds publish an unavailable record.
 
 The current evidence checker intentionally remains red. No canonical row is asserted verified without complete source-bound built evidence. The authenticator's browser vault, management and recovery flows are still incomplete. Read the new conversion and authenticator articles before continuing those features.
+
+## Workspace and vault continuation
+
+The next source slice adds transactional workspace tabs/groups, pin/rename/move/close/reopen, docking, separate strip/master/group searches, draft protection and Material Web confirmation. Fifteen workspace checks cover state/history consistency, conflicts and recovery. Eight additional vault checks cover missing keys, corrupted records, concurrent enrollment, paging and duplicate identities. The complete focused suite now has 50 passing cases, and TypeScript passes.
+
+The isolated development preview completed open/group/move/close/confirm/reopen, including checking the actual checkbox and slider states. A dual-active-indicator defect found in the screenshot was corrected by using one selection owner and synchronizing after component slot changes. A second runtime flow verified draft retention on cancellation, confirmed navigation, and bilingual dark settings at 320 px with emulated scale 1.5, no document overflow and one active tab. These are development observations, not final accepted evidence.
+
+The independent review's refresh race, stale selection, channel reconnection, confirmation-focus and history-validation findings have source repairs. History is not silently pruned: a history-only write rejection falls back to a current-state-only write with an explicit missing-history notice. Primary-state write failure still reports no change. Additional runtime verification is required for fallback storage and cross-page behavior.
+
+The completeness inventory remains unverified. Full element appearance/locks, schedules, Ollama integration, complete utilities, localization, export/history surfaces and source-bound acceptance remain outstanding. Reuse the existing Sites record. No production publication or default-branch integration is claimed.

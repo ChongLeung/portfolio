@@ -7,8 +7,10 @@ import { adapters, conversionLimit, type AdapterId } from '../lib/conversion';
 
 export default function Converter({
   t,
+  onDraftChange,
 }: {
   t: (en: string, yue?: string) => string;
+  onDraftChange?: (dirty: boolean) => void;
 }) {
   const [adapterId, setAdapter] = useState<AdapterId>('json-format');
   const [matches, setMatches] = useState<string[]>(
@@ -27,6 +29,10 @@ export default function Converter({
   const deadline = useRef<ReturnType<typeof setTimeout> | null>(null);
   const generation = useRef(0);
   const reader = useRef<FileReader | null>(null);
+  useEffect(() => {
+    onDraftChange?.(!!file || !!result || busy);
+    return () => onDraftChange?.(false);
+  }, [file, result, busy, onDraftChange]);
   const adapter = adapters.find((item) => item.id === adapterId)!;
   const stop = () => {
     generation.current++;
