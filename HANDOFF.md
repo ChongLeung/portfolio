@@ -56,3 +56,13 @@ The isolated development preview completed open/group/move/close/confirm/reopen,
 The independent review's refresh race, stale selection, channel reconnection, confirmation-focus and history-validation findings have source repairs. History is not silently pruned: a history-only write rejection falls back to a current-state-only write with an explicit missing-history notice. Primary-state write failure still reports no change. Additional runtime verification is required for fallback storage and cross-page behavior.
 
 The completeness inventory remains unverified. Full element appearance/locks, schedules, Ollama integration, complete utilities, localization, export/history surfaces and source-bound acceptance remain outstanding. Reuse the existing Sites record. No production publication or default-branch integration is claimed.
+
+## Preservation closeout
+
+Implementation is paused before completion. The code milestone `9362a52001af23a8784f10acb53189e5fa697d93` is pushed on the feature branch and built successfully after stopping the old task-owned output server. The failed first rebuild did not pass; it encountered an output-directory sharing error. The replacement build succeeded from committed, clean source.
+
+A fresh isolated browser then completed the workspace and draft-protection flows against that build. The workspace flow observed one 404 resource diagnostic; a focused uncached reload did not reproduce a failing response. The original diagnostic still needs classification before accepting network evidence. Do not upgrade these observations into a complete acceptance verdict.
+
+The host-contained session-status attempt failed with `GUARD_INCOMPLETE`: the deployed emission module does not expose the interface required by the current client. No session record was created. The attempt was stopped, and no credential was brought into the portfolio source. The portfolio's own Status Hub surface/integration also remains unfinished.
+
+The owning task retains both checkouts and the unmerged feature branch. No repository cleanup or default-branch integration is authorized by this unfinished state. The next owner should use the latest feature-branch handoff, preserve its existing Sites project identifier, complete the remaining canonical capabilities and evidence, and then integrate and publish. The complete original scope remains outstanding; this handoff does not redefine completion.
