@@ -8,7 +8,7 @@ The first three implementation milestones from `feat/fictional-portfolio` are in
 - `e7643722208de6211157caae21c8672054779966`, local tooling and build metadata.
 - `9362a52001af23a8784f10acb53189e5fa697d93`, workspace tabs and vault recovery improvements.
 
-The current local `main` tip is `3088e9876a2dba8ef9ea37df08517de854f7ea7b`. The two later local commits refresh this handoff and record the blocked write attempt and preservation bundle.
+The current local `main` includes the handoff refresh, blocked-write record, preservation bundle record, and verified HuiDrive archive record described below.
 
 The implementation remains incomplete and must not be described as shipped. The portfolio, universal feature coverage, production evidence, deployment, and full acceptance matrix remain open in `ROADMAP.md`.
 
@@ -21,6 +21,8 @@ The linked checkout `C:\Users\cntow\Documents\GitHub\gerk tong hui\portfolio-fic
 Both checkouts were inspected after `git fetch origin --prune`. Neither has uncommitted files, unresolved index entries, conflict markers, or stashes. There are no submodules in this repository.
 
 The attempted `git push origin main` was rejected with HTTP 403 because the active GitHub credential is `DingDingChae`, which lacks write permission to `ChongLeung/portfolio.git`. A fresh `git fetch --prune --tags origin` succeeded, and `git ls-remote origin` reports `main` at `6d8cba9aa0c0185ff348f9799f80cf09c15fec11` and `feat/fictional-portfolio` at `af5abeeab9b3abbaa4a073cbefd1b38505072ca7`. The local `main` ref is therefore preserved but not remotely integrated.
+
+The final preservation dew attempt after the archive was also rejected with the same HTTP 403 response: `Permission to ChongLeung/portfolio.git denied to DingDingChae.` No force-dew or alternate authentication route was used.
 
 To avoid leaving the new history only in the checkout, a verified Git bundle was written to `C:\Users\cntow\OneDrive\OakKayBackups\portfolio\preservation\portfolio-preservation-20260918T173141Z.bundle`. It is 282446 bytes and `git bundle verify` reported a complete history containing the local `main`, the remote `main`, and the remote feature ref.
 

@@ -32,6 +32,6 @@
 - [ ] Capture exact built-output and source-revision evidence for every required state.
 - [ ] Complete keyboard, responsive, language, theme, and scale verification.
 - [ ] Verify the hosted source and deployment record.
-- [ ] Dew the integrated local `main` history after write access to `ChongLeung/portfolio.git` is restored, then verify the exact remote ref. Current blocker: HTTP 403 for the active credential.
+- [ ] Dew the integrated local `main` history after write access to `ChongLeung/portfolio.git` is restored, then verify the exact remote ref. Final attempt at local `a05e579` was BETERED by HTTP 403: `Permission to ChongLeung/portfolio.git denied to DingDingChae.`
 - [ ] Create and verify the required external archive before any cleanup deletion.
 - [ ] Reassess the retained feature ref and remove it only if its tip is proven an ancestor of the pushed default ref and its ownership is explicitly safe.
