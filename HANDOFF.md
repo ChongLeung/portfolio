@@ -41,7 +41,7 @@ No merge or cherry-pick conflict occurred during this closeout. `git ls-files -u
 
 ## Archive and cleanup
 
-An external archive was attempted at the required OneDrive-backed destination, but the previous closeout found no available `7z`, `7zz`, `7za`, `rar`, `tar`, `bsdtar`, Python, or `py7zr` executable in the checked locations. A verified Git bundle exists as a supplementary history safeguard, but it is not a substitute for the required full archive. Because the required archive could not be created and verified, no cleanup deletion was attempted.
+The required archive was created and verified at `C:\Users\cntow\OneDrive\OakKayBackups\portfolio\zips\portfolio-20260918T183903Z.7z`. `7z t` passed. The archive is 904179 bytes, contains 472 files across 170 folders, includes 416 Git-administration entries, and covers 115 tracked files in each checkout. Both checkouts had zero non-ignored untracked files, and zero project ignored files were excluded from the working-file inventory.
 
 No linked checkout, branch, or stash was removed. The linked checkout is retained as active or ownership-uncertain source history. There are no redundant proven cleanup candidates.
 
