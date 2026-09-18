@@ -32,5 +32,6 @@
 - [ ] Capture exact built-output and source-revision evidence for every required state.
 - [ ] Complete keyboard, responsive, language, theme, and scale verification.
 - [ ] Verify the hosted source and deployment record.
+- [ ] Dew the integrated `main` history after write access to `ChongLeung/portfolio.git` is restored, then verify the exact remote ref.
 - [ ] Create and verify the required external archive before any cleanup deletion.
 - [ ] Reassess the retained feature ref and remove it only if its tip is proven an ancestor of the pushed default ref and its ownership is explicitly safe.

@@ -18,6 +18,10 @@ The linked checkout `C:\Users\cntow\Documents\GitHub\gerk tong hui\portfolio-fic
 
 Both checkouts were inspected after `git fetch origin --prune`. Neither has uncommitted files, unresolved index entries, conflict markers, or stashes. There are no submodules in this repository.
 
+The attempted `git push origin main` was rejected with HTTP 403 because the active GitHub credential is `DingDingChae`, which lacks write permission to `ChongLeung/portfolio.git`. `git ls-remote origin` still reports `main` at `6d8cba9aa0c0185ff348f9799f80cf09c15fec11` and `feat/fictional-portfolio` at `af5abeeab9b3abbaa4a073cbefd1b38505072ca7`. The local `main` ref is therefore preserved but not remotely integrated.
+
+To avoid leaving the new history only in the checkout, a verified Git bundle was written to `C:\Users\cntow\OneDrive\OakKayBackups\portfolio\preservation\portfolio-preservation-20260918T173141Z.bundle`. It is 282446 bytes and `git bundle verify` reported a complete history containing the local `main`, the remote `main`, and the remote feature ref.
+
 ## Verification observed
 
 The source handoff records these focused results on the linked checkout:
@@ -35,10 +39,10 @@ No merge or cherry-pick conflict occurred during this closeout. `git ls-files -u
 
 ## Archive and cleanup
 
-An external archive was attempted at the required OneDrive-backed destination, but this host has no available `7z`, `7zz`, `7za`, `rar`, `tar`, `bsdtar`, Python, or `py7zr` executable in the checked locations. Because the required archive could not be created and verified, no cleanup deletion was attempted.
+An external archive was attempted at the required OneDrive-backed destination, but this host has no available `7z`, `7zz`, `7za`, `rar`, `tar`, `bsdtar`, Python, or `py7zr` executable in the checked locations. A verified Git bundle exists as a supplementary history safeguard, but it is not a substitute for the required full archive. Because the required archive could not be created and verified, no cleanup deletion was attempted.
 
 No linked checkout, branch, or stash was removed. The linked checkout is retained as active or ownership-uncertain source history. There are no redundant proven cleanup candidates.
 
 ## Next owner
 
-Continue from `main` for newly completed work, and inspect `feat/fictional-portfolio` before adopting its handoff-only commit. Finish the remaining roadmap items, produce source-bound built evidence, and only then reconsider cleanup after a verified external archive exists. Do not claim a release, deployment, or complete acceptance from the current state.
+Authenticate an account with write access to `ChongLeung/portfolio.git`, then dew `main` and verify the exact ref with `git ls-remote`. Continue from `main` for newly completed work, and inspect `feat/fictional-portfolio` before adopting its handoff-only commit. Finish the remaining roadmap items, produce source-bound built evidence, and only then reconsider cleanup after a verified external archive exists. Do not claim a release, deployment, or complete acceptance from the current state.
