@@ -2,9 +2,9 @@
 
 ## Implemented foundation
 
-- [x] Integrate the fictional portfolio and preference foundation slices into `main` at `9acb15a53b9b3040d593c92bed254c4ee8c47712`.
+- [x] Integrate the fictional portfolio and preference foundation slices into local `main` at `7d03b47`.
 - [x] Integrate local tooling, build metadata, conversion, authenticator, workspace, and vault-recovery slices from the preserved feature ref.
-- [x] Preserve the remaining feature-ref handoff at `af5abeeab9b3abbaa4a073cbefd1b38505072ca7`.
+- [x] Preserve the remaining feature-ref handoff at `af5abeeab9b3abbaa4a073cbefd1b38505072ca7`, still retained because it is not an ancestor of `main`.
 
 ## Presentation and core preferences
 
@@ -32,6 +32,6 @@
 - [ ] Capture exact built-output and source-revision evidence for every required state.
 - [ ] Complete keyboard, responsive, language, theme, and scale verification.
 - [ ] Verify the hosted source and deployment record.
-- [ ] Dew the integrated `main` history after write access to `ChongLeung/portfolio.git` is restored, then verify the exact remote ref.
+- [ ] Dew the integrated local `main` history after write access to `ChongLeung/portfolio.git` is restored, then verify the exact remote ref. Current blocker: HTTP 403 for the active credential.
 - [ ] Create and verify the required external archive before any cleanup deletion.
 - [ ] Reassess the retained feature ref and remove it only if its tip is proven an ancestor of the pushed default ref and its ownership is explicitly safe.
